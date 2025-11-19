@@ -113,6 +113,10 @@ public abstract class Beverage
       this.amount = amount;
    }
 
+   public void setTemperature(int temp){
+      this.temperature = temp;
+   }
+
    public int getTemperature()
    {
       return temperature;
@@ -121,4 +125,5 @@ public abstract class Beverage
    public String toString(){
       return getName();
    }
+
 }

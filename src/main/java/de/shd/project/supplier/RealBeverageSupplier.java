@@ -14,6 +14,8 @@ public class RealBeverageSupplier implements BeverageSupplier
     public Set<Beverage> supplyBeverages()
     {
         Set<Beverage> allBeverages = new HashSet<>();
+        Kakao kakao = new Kakao("Kakao",0.50,0.5);
+        kakao.setTemperature(60);
         allBeverages.add(new VodkaMonster("Vodkamonster-white",0.95,0.5));
         allBeverages.add(new VodkaMonster("Vodkamonster-standard",0.85,0.5));
         allBeverages.add(new Vodka("Vodka-white",0.75,0.5));
@@ -24,6 +26,7 @@ public class RealBeverageSupplier implements BeverageSupplier
         allBeverages.add(new Fanta("Fanta",0.30,0.5));
         allBeverages.add(new Sprite("Sprite-zero",0.40,0.5));
         allBeverages.add(new Sprite("Sprite",0.35,0.5));
+        allBeverages.add(kakao);
         return allBeverages;
     }
 }

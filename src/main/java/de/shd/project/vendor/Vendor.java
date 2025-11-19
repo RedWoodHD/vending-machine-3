@@ -75,7 +75,11 @@ public class Vendor implements VendorFunctionality
    @Override
    public long countNumberOfBeveragesDistinctOfAllVendingMachines()
    {
-       return vendingMachines.stream().distinct().count();
+       return vendingMachines.stream()
+            .flatMap(vm -> vm.getBeverages().stream())
+            .map(Beverage::getName)
+            .distinct()
+            .count();
    }
 
    /**
