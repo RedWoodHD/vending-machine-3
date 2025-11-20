@@ -18,6 +18,5 @@ public class Main
         vendor.restock();
 
         // Siehe test package für testcases. :)
-
     }
 }

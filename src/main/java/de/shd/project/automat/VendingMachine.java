@@ -247,7 +247,28 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     @Override
     public VendingMachinePurchase buyBeverage(String name, double money)
     {
-        return null;
+        Optional<Beverage> found = findBeverage(name);
+        if (found.isEmpty())
+        {
+            System.out.println("Getränk " + name + " wurde nicht gefunden.");
+            throw new VendingMachineException();
+        }
+        Beverage beverage = found.get();
+        double bottlePrice = calculatePriceForOneBottleOf(name);
+        if (money < bottlePrice)
+        {
+            System.out.println("Nicht genug Geld. Benötigt: " + bottlePrice + "€");
+            throw new VendingMachineException();
+        }
+        if (beverage.getAmount() < 0.5)
+        {
+            System.out.println("Vom Getränk " + beverage.getName() + "ist nicht genug vorhanden.");
+            throw new InsufficientBeverageException();
+        }
+        double change = money - bottlePrice;
+        beverage.setAmount(beverage.getAmount() - 0.5);
+        Bottle<Beverage> bottle = new Bottle<>(beverage);
+        return new VendingMachinePurchase(bottle, change);
     }
 
     /**
@@ -310,7 +331,7 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public Map<String, Beverage> getAllBeveragesMappedByName()
     {
         return beverages.stream()
-                .collect(Collectors.toMap(Beverage::getName,b -> b));
+                .collect(Collectors.toMap(Beverage::getName, b -> b));
     }
 
     /**
@@ -323,8 +344,8 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public List<Beverage> getListByFilter(Predicate<Beverage> filter)
     {
         return beverages.stream()
-            .filter(filter)
-            .toList();
+                .filter(filter)
+                .toList();
     }
 
     /**
@@ -338,9 +359,9 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public List<Double> getListOfCurrentAmountsOfBeverages()
     {
         return beverages.stream()
-            .map(Beverage::getAmount)
-            .distinct()
-            .toList();
+                .map(Beverage::getAmount)
+                .distinct()
+                .toList();
     }
 
     /**
@@ -355,13 +376,14 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public List<Beverage> findAllAffordableBeverages(double budget)
     {
         return beverages.stream()
-            .filter(b -> {
-                double price = calculatePriceForOneBottleOf(b.getName());
-                return price <= budget;
-            })
-            .sorted((b1, b2) -> Double.compare(calculatePriceForOneBottleOf(
-                    b1.getName()),calculatePriceForOneBottleOf(
-                            b2.getName())))
+                .filter(b ->
+                {
+                    double price = calculatePriceForOneBottleOf(b.getName());
+                    return price <= budget;
+                })
+                .sorted((b1, b2) -> Double.compare(calculatePriceForOneBottleOf(
+                        b1.getName()), calculatePriceForOneBottleOf(
+                        b2.getName())))
                 .toList();
     }
 
@@ -385,10 +407,10 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public List<Beverage> getTopFiveBeveragesWithTheLeastAmountOrderedByAmountDescending()
     {
         return beverages.stream()
-            .sorted(Comparator.comparingDouble(Beverage::getAmount))
-            .limit(5)
-            .sorted(Comparator.comparingDouble(Beverage::getAmount).reversed())
-            .toList();
+                .sorted(Comparator.comparingDouble(Beverage::getAmount))
+                .limit(5)
+                .sorted(Comparator.comparingDouble(Beverage::getAmount).reversed())
+                .toList();
     }
 
     /**
@@ -408,8 +430,8 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public double calculateTotalValueOfAllBeverages()
     {
         return beverages.stream()
-            .mapToDouble(b -> b.getAmount() * b.getPricePerLiter())
-            .sum();
+                .mapToDouble(b -> b.getAmount() * b.getPricePerLiter())
+                .sum();
     }
 
     /**
@@ -420,9 +442,9 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public double calculateTotalValueOfAllAlcoholicBeverages()
     {
         return beverages.stream()
-            .filter(b -> b instanceof Alcoholic)
-            .mapToDouble(b -> b.getAmount() * b.getPricePerLiter())
-            .sum();
+                .filter(b -> b instanceof Alcoholic)
+                .mapToDouble(b -> b.getAmount() * b.getPricePerLiter())
+                .sum();
     }
 
     /**
@@ -439,9 +461,9 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public double calculateAverageTemperatureOfAllBeverages()
     {
         return beverages.stream()
-            .mapToInt(Beverage::getTemperature)
-            .average()
-            .orElse(0);
+                .mapToInt(Beverage::getTemperature)
+                .average()
+                .orElse(0);
     }
 
     /**
@@ -453,10 +475,10 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public double calculateAverageAlcoholicStrengthOfAllAlcoholicBeverages()
     {
         return beverages.stream()
-            .filter(b -> b instanceof Alcoholic)
-            .mapToDouble(b -> ((Alcoholic) b).getAlcoholStrength())
-            .average()
-            .orElse(0);
+                .filter(b -> b instanceof Alcoholic)
+                .mapToDouble(b -> ((Alcoholic) b).getAlcoholStrength())
+                .average()
+                .orElse(0);
     }
 
     /**
@@ -474,7 +496,7 @@ public class VendingMachine implements VendingMachineDisplayFunctionality, Vendi
     public double getMultipliedAmountsOfBeverages()
     {
         return beverages.stream()
-            .map(Beverage::getAmount)
-            .reduce(1.0, (a, b) -> a * b);
+                .map(Beverage::getAmount)
+                .reduce(1.0, (a, b) -> a * b);
     }
 }
